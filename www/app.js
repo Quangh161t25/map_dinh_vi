@@ -618,7 +618,28 @@ async function fetchData(seq = moduleLoadSeq) {
     if (document.getElementById("mapContainer")) {
         document.getElementById("mapContainer").style.display = "none";
     }
+    const homeContainer = document.getElementById("homeContainer");
+    if (homeContainer) homeContainer.style.display = "none";
+    if (document.getElementById("tableWrapper")) document.getElementById("tableWrapper").style.display = "block";
+    if (document.getElementById("headerActions")) document.getElementById("headerActions").style.display = "flex";
+    if (document.getElementById("filterPanel")) document.getElementById("filterPanel").style.display = "flex";
+
+    if (currentModule === "TRANG_CHU") {
+        if (document.getElementById("tableWrapper")) document.getElementById("tableWrapper").style.display = "none";
+        if (document.getElementById("headerActions")) document.getElementById("headerActions").style.display = "none";
+        if (document.getElementById("filterPanel")) document.getElementById("filterPanel").style.display = "none";
+        if (homeContainer) {
+            homeContainer.style.display = "flex";
+            renderTrangChuModule();
+        }
+        hideLoading();
+        return;
+    }
+
     if (currentModule === "VI_TRI") {
+        if (document.getElementById("tableWrapper")) document.getElementById("tableWrapper").style.display = "none";
+        if (document.getElementById("headerActions")) document.getElementById("headerActions").style.display = "none";
+        if (document.getElementById("filterPanel")) document.getElementById("filterPanel").style.display = "none";
         renderMapModule();
         hideLoading();
         return;
@@ -2838,5 +2859,31 @@ async function startCapacitorBackgroundTracking() {
     } catch(e) {
         console.error("Lỗi Capacitor:", e);
         return false;
+    }
+}
+\n
+function renderTrangChuModule() {
+    const container = document.getElementById("homeContainer");
+    if (!container) return;
+    
+    const modules = Object.keys(CONFIG.modules).filter(k => k !== "TRANG_CHU" && !CONFIG.modules[k].hidden);
+    
+    let html = `<div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%; justify-content: center; align-items: center; margin-top: 50px;">`;
+    
+    modules.forEach(mod => {
+        const conf = CONFIG.modules[mod];
+        html += `
+        <div class="module-card" onclick="switchModule('${mod}')" style="background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 40px; width: 280px; text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid #e5e7eb;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.15)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)';">
+            <i data-lucide="${conf.icon}" style="width: 64px; height: 64px; color: var(--primary-color); margin-bottom: 20px;"></i>
+            <h3 style="margin: 0; font-size: 22px; color: #1f2937; font-weight: 600;">${conf.label}</h3>
+        </div>
+        `;
+    });
+    
+    html += `</div>`;
+    container.innerHTML = html;
+    
+    if (window.lucide) {
+        lucide.createIcons();
     }
 }
