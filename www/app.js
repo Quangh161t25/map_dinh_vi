@@ -2537,6 +2537,13 @@ async function searchMapAddress() {
 let otherUserMarkers = [];
 async function loadOthersLocations() {
     if (!mapInstance) return;
+    if (otherUserMarkers && otherUserMarkers.length > 0) {
+        for (const marker of otherUserMarkers) {
+            mapInstance.removeLayer(marker);
+        }
+        otherUserMarkers = [];
+        return;
+    }
     showLoading("Đang tải vị trí mọi người...");
     try {
         const rangeStr = `${quoteSheetName("VI_TRI")}!A2:E`;
@@ -2732,6 +2739,13 @@ async function handleCameraUpload(event) {
 
 async function viewPhotos() {
     if (!mapInstance) return;
+    if (photoMarkers && photoMarkers.length > 0) {
+        for (const marker of photoMarkers) {
+            mapInstance.removeLayer(marker);
+        }
+        photoMarkers = [];
+        return;
+    }
     showLoading("Đang tải danh sách ảnh...");
     try {
         const range = `${quoteSheetName("ANH_CHUP")}!A2:F`;
