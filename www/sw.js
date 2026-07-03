@@ -1,4 +1,4 @@
-const CACHE_NAME = "kieu-duc-app-v46";
+const CACHE_NAME = "kieu-duc-app-v47";
 const APP_SHELL = [
     "./",
     "./index.html",

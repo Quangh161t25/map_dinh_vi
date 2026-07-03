@@ -103,28 +103,27 @@
             <div id="kanbanBoard" class="kanban-board"></div>
 
             <div id="mapContainer" style="display: none; height: calc(100vh - 150px); width: 100%; position: relative; margin-top: 10px;">
-                <div id="mapControlsPanel" class="map-controls-panel">
-                    <div class="map-control-group primary-group">
-                        <button id="toggleTrackingBtn" type="button" class="primary-btn tracking-btn" onclick="toggleTracking()"><i data-lucide="navigation"></i> Bắt đầu Định vị</button>
-                        <button type="button" class="primary-btn camera-btn" onclick="triggerCamera()"><i data-lucide="camera"></i> Chụp ảnh</button>
-                    </div>
-                    
+                <div id="mapTopBar" class="map-top-bar">
                     <div class="map-control-group">
                         <input type="text" id="searchAddress" placeholder="Nhập địa chỉ..." onkeypress="if(event.key==='Enter') searchMapAddress()">
-                        <button type="button" class="secondary-btn" onclick="searchMapAddress()"><i data-lucide="search"></i></button>
+                        <button type="button" class="icon-btn-small" onclick="searchMapAddress()"><i data-lucide="search"></i></button>
                     </div>
-
                     <div class="map-control-group">
                         <input type="date" id="historyDate" onchange="loadHistory()">
-                        <button type="button" class="secondary-btn" onclick="loadHistory()">Xem lịch sử</button>
                     </div>
+                </div>
 
-                    <div class="map-control-group">
-                        <button type="button" class="secondary-btn" onclick="loadOthersLocations()"><i data-lucide="users"></i> Vị trí mọi người</button>
-                        <button type="button" class="secondary-btn" onclick="viewPhotos()"><i data-lucide="image"></i> Xem ảnh</button>
+                <div id="mapRightSidebar" class="map-right-sidebar">
+                    <button type="button" class="icon-btn-toggle" onclick="toggleMapSidebar()" id="toggleMapSidebarBtn"><i data-lucide="chevron-right"></i></button>
+                    <div class="map-sidebar-content" id="mapSidebarContent">
+                        <button id="toggleTrackingBtn" type="button" class="map-icon-btn tracking-btn" onclick="toggleTracking()" title="Bắt đầu Định vị"><i data-lucide="navigation"></i></button>
+                        <button type="button" class="map-icon-btn camera-btn" onclick="triggerCamera()" title="Chụp ảnh"><i data-lucide="camera"></i></button>
+                        <button type="button" class="map-icon-btn" onclick="loadHistory()" title="Xem lịch sử"><i data-lucide="clock"></i></button>
+                        <button type="button" class="map-icon-btn" onclick="loadOthersLocations()" title="Vị trí mọi người"><i data-lucide="users"></i></button>
+                        <button type="button" class="map-icon-btn" onclick="viewPhotos()" title="Xem ảnh"><i data-lucide="image"></i></button>
                     </div>
-
                     <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;" onchange="handleCameraUpload(event)">
+                    <input type="file" id="mapMarkerPhotoInput" accept="image/*" style="display: none;" onchange="handleMapMarkerPhotoUpload(event)">
                 </div>
                 <div id="map" style="height: 100%; width: 100%; border-radius: 8px;"></div>
             </div>
@@ -155,7 +154,7 @@
         </form>
     </div>
 
-    <script src="app.js?v=18"></script>
+    <script src="app.js?v=19"></script>
     <script>
         if ("serviceWorker" in navigator) {
             window.addEventListener("load", () => {

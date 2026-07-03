@@ -2432,7 +2432,7 @@ function toggleTracking() {
             clearInterval(trackingIntervalId);
             trackingIntervalId = null;
         }
-        btn.innerHTML = `<i data-lucide="navigation"></i> Bắt đầu Định vị`; if(window.lucide) lucide.createIcons();
+        btn.innerHTML = `<i data-lucide="navigation"></i>`; btn.title = "Bắt đầu Định vị"; if(window.lucide) lucide.createIcons();
         btn.classList.remove("danger-btn");
         btn.classList.add("primary-btn");
         alert("Đã tắt theo dõi vị trí.");
@@ -2441,19 +2441,19 @@ function toggleTracking() {
             alert("Trình duyệt không hỗ trợ Geolocation.");
             return;
         }
-        btn.innerHTML = `<i data-lucide="loader"></i> Đang lấy vị trí...`; if(window.lucide) lucide.createIcons();
+        btn.innerHTML = `<i data-lucide="loader"></i>`; btn.title = "Đang lấy vị trí..."; if(window.lucide) lucide.createIcons();
         btn.classList.remove("primary-btn");
         btn.classList.add("danger-btn");
         
         
         if (window.Capacitor && window.Capacitor.Plugins.BackgroundGeolocation) {
-            btn.innerHTML = `<i data-lucide="stop-circle"></i> Dừng Định vị`; if(window.lucide) lucide.createIcons();
+            btn.innerHTML = `<i data-lucide="stop-circle"></i>`; btn.title = "Dừng Định vị"; btn.classList.add("danger-btn"); if(window.lucide) lucide.createIcons();
             startCapacitorBackgroundTracking();
             return;
         }
         
         trackingWatchId = navigator.geolocation.watchPosition((position) => {
-            btn.textContent = "Dừng Định vị";
+            btn.innerHTML = `<i data-lucide="stop-circle"></i>`; btn.title = "Dừng Định vị"; btn.classList.add("danger-btn"); if(window.lucide) lucide.createIcons();
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
             
@@ -2943,3 +2943,74 @@ document.addEventListener('DOMContentLoaded', () => {
         if (icon) icon.setAttribute('data-lucide', 'panel-left-open');
     }
 });
+
+function toggleMapSidebar() {
+    const sidebar = document.getElementById('mapRightSidebar');
+    sidebar.classList.toggle('collapsed');
+}
+
+function triggerMapMarkerPhotoUpload() {
+    document.getElementById('mapMarkerPhotoInput').click();
+}
+
+async function handleMapMarkerPhotoUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const loc = window.customMarkerLoc ? window.customMarkerLoc() : null;
+    if (!loc) {
+        alert("Không tìm thấy vị trí đánh dấu!");
+        return;
+    }
+    
+    showLoading("Đang tải ảnh lên máy chủ...");
+    try {
+        const formData = new FormData();
+        formData.append("image", file);
+        
+        const imgbbResponse = await fetch("https://api.imgbb.com/1/upload?key=1bad1429a242d7040fda3f2cfddb3a25", {
+            method: "POST",
+            body: formData
+        });
+        
+        const imgbbData = await imgbbResponse.json();
+        if (!imgbbData.success) {
+            throw new Error("Lỗi từ ImgBB: " + (imgbbData.error ? imgbbData.error.message : "Unknown error"));
+        }
+        
+        const imageUrl = imgbbData.data.url;
+        
+        showLoading("Đang lưu dữ liệu...");
+        const now = new Date();
+        const id = 'IMG' + now.getTime();
+        const id_nv = currentUser.id || currentUser.ho_ten || "Unknown";
+        
+        const row = {
+            "ID": id,
+            "Thời gian": now.toLocaleString("vi-VN"),
+            "Vị trí": loc.lat + ", " + loc.lng,
+            "Ảnh": imageUrl,
+            "Người gửi": id_nv,
+            "Ghi chú": "Ảnh đánh dấu thủ công"
+        };
+        
+        await fetch(CONFIG.apiUrl, {
+            method: "POST",
+            body: JSON.stringify({
+                action: "append",
+                sheetName: "ANH_CHUP",
+                data: row
+            })
+        });
+        
+        hideLoading();
+        alert("Đã lưu ảnh tại vị trí đánh dấu!");
+        const m = window.customMarkerRef ? window.customMarkerRef() : null;
+        if (m) m.closePopup();
+        
+    } catch (error) {
+        console.error(error);
+        hideLoading();
+        alert("Lỗi xử lý ảnh: " + error.message);
+    }
+}
