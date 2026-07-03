@@ -1,5 +1,5 @@
 const CONFIG = {
-    appName: "kiều đức",
+    appName: "Vị trí",
     spreadsheetId: "1uFtqcwXB_5WBSoTF6kCnLrgtH52umRBx9engl7oFU8Y",
     serviceAccountEmail: "test-gia-ason@api-test-sheet-161.iam.gserviceaccount.com",
     privateKey: `-----BEGIN PRIVATE KEY-----
@@ -506,9 +506,18 @@ function renderTabs() {
     lucide.createIcons();
 }
 
+function toggleMobileSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('mobile-open');
+    overlay.classList.toggle('active');
+}
+
 function updateModuleTitle() {
     const sheetName = document.getElementById("sheetName");
     if (sheetName) sheetName.innerText = getModuleConfig().label.toUpperCase();
+    const mobileTitle = document.getElementById("mobilePageTitle");
+    if (mobileTitle) mobileTitle.innerText = getModuleConfig().label;
 }
 
 function updateModuleActions() {
@@ -2299,7 +2308,7 @@ function logout() {
 async function startApp() {
     document.title = CONFIG.appName;
     document.getElementById("pageTitle").innerText = CONFIG.appName;
-    document.getElementById("brandText").innerHTML = "KIỀU<br>ĐỨC";
+    
     try {
         const saved = sessionStorage.getItem(MODULE_STORAGE_KEY);
         if (CONFIG.modules[saved] && !CONFIG.modules[saved].hidden) currentModule = saved;
@@ -2423,7 +2432,7 @@ function toggleTracking() {
             clearInterval(trackingIntervalId);
             trackingIntervalId = null;
         }
-        btn.textContent = "Bắt đầu Định vị";
+        btn.innerHTML = `<i data-lucide="navigation"></i> Bắt đầu Định vị`; if(window.lucide) lucide.createIcons();
         btn.classList.remove("danger-btn");
         btn.classList.add("primary-btn");
         alert("Đã tắt theo dõi vị trí.");
@@ -2432,13 +2441,13 @@ function toggleTracking() {
             alert("Trình duyệt không hỗ trợ Geolocation.");
             return;
         }
-        btn.textContent = "Đang lấy vị trí...";
+        btn.innerHTML = `<i data-lucide="loader"></i> Đang lấy vị trí...`; if(window.lucide) lucide.createIcons();
         btn.classList.remove("primary-btn");
         btn.classList.add("danger-btn");
         
         
         if (window.Capacitor && window.Capacitor.Plugins.BackgroundGeolocation) {
-            btn.textContent = "Dừng Định vị";
+            btn.innerHTML = `<i data-lucide="stop-circle"></i> Dừng Định vị`; if(window.lucide) lucide.createIcons();
             startCapacitorBackgroundTracking();
             return;
         }
@@ -2861,29 +2870,76 @@ async function startCapacitorBackgroundTracking() {
         return false;
     }
 }
-\n
+
+
 function renderTrangChuModule() {
     const container = document.getElementById("homeContainer");
     if (!container) return;
     
     const modules = Object.keys(CONFIG.modules).filter(k => k !== "TRANG_CHU" && !CONFIG.modules[k].hidden);
     
-    let html = `<div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%; justify-content: center; align-items: center; margin-top: 50px;">`;
+    let html = `
+    <div style="width: 100%; max-width: 1200px; margin: 0 auto; padding: 20px;">
+        <div style="margin-bottom: 40px; text-align: center;">
+            <h2 style="font-size: 28px; color: var(--primary-color); margin-bottom: 10px;">Chào mừng đến với Kiều Đức App</h2>
+            <p style="color: #6b7280; font-size: 16px;">Vui lòng chọn một chức năng bên dưới để bắt đầu</p>
+        </div>
+        <div style="display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; align-items: stretch;">`;
     
     modules.forEach(mod => {
         const conf = CONFIG.modules[mod];
+        let desc = "";
+        if (mod === "VI_TRI") desc = "Theo dõi vị trí hiện tại và xem lịch sử di chuyển";
+        if (mod === "ANH_CHUP") desc = "Xem thư viện ảnh đã chụp tại các địa điểm";
+        
         html += `
-        <div class="module-card" onclick="switchModule('${mod}')" style="background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 40px; width: 280px; text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid #e5e7eb;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.15)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)';">
-            <i data-lucide="${conf.icon}" style="width: 64px; height: 64px; color: var(--primary-color); margin-bottom: 20px;"></i>
-            <h3 style="margin: 0; font-size: 22px; color: #1f2937; font-weight: 600;">${conf.label}</h3>
+        <div class="module-card" onclick="switchModule('${mod}')" style="background: linear-gradient(145deg, #ffffff 0%, #f3f4f6 100%); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 40px 30px; width: 320px; text-align: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.8); position: relative; overflow: hidden;" onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 20px 40px rgba(79, 70, 229, 0.15)'; this.style.borderColor='var(--primary-color)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.08)'; this.style.borderColor='rgba(255,255,255,0.8)';">
+            <div style="width: 80px; height: 80px; background: rgba(79, 70, 229, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px auto;">
+                <i data-lucide="${conf.icon}" style="width: 40px; height: 40px; color: var(--primary-color);"></i>
+            </div>
+            <h3 style="margin: 0 0 15px 0; font-size: 24px; color: #1f2937; font-weight: 700;">${conf.label}</h3>
+            <p style="margin: 0; color: #6b7280; font-size: 15px; line-height: 1.5;">${desc}</p>
         </div>
         `;
     });
     
-    html += `</div>`;
+    html += `</div></div>`;
     container.innerHTML = html;
     
     if (window.lucide) {
         lucide.createIcons();
     }
 }
+
+function toggleSidebar() {
+    const shell = document.querySelector('.app-shell');
+    const isCollapsed = shell.classList.toggle('sidebar-collapsed');
+    localStorage.setItem('sidebar-collapsed', isCollapsed);
+    
+    const icon = document.getElementById('sidebarToggleIcon');
+    if (icon) {
+        if (isCollapsed) {
+            icon.setAttribute('data-lucide', 'panel-left-open');
+        } else {
+            icon.setAttribute('data-lucide', 'panel-left-close');
+        }
+        lucide.createIcons();
+    }
+    
+    // Trigger map resize if map is visible
+    setTimeout(() => {
+        if (window.map) {
+            window.map.invalidateSize();
+        }
+    }, 300);
+}
+
+// Restore sidebar state
+document.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('sidebar-collapsed') === 'true') {
+        const shell = document.querySelector('.app-shell');
+        if (shell) shell.classList.add('sidebar-collapsed');
+        const icon = document.getElementById('sidebarToggleIcon');
+        if (icon) icon.setAttribute('data-lucide', 'panel-left-open');
+    }
+});

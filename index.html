@@ -43,18 +43,28 @@
     </section>
 
     <div class="app-shell" style="display: none;">
+        <header class="mobile-header">
+            <button type="button" class="icon-btn" onclick="toggleMobileSidebar()" style="background: transparent; border: none; color: white; padding: 4px;">
+                <i data-lucide="menu"></i>
+            </button>
+            <h1 id="mobilePageTitle">Vị trí</h1>
+        </header>
+        <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleMobileSidebar()"></div>
         <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
+            <div class="sidebar-header" style="display: flex; justify-content: space-between; align-items: center;">
                 <div class="brand">
-                    <div id="brandText" class="logo">KIỀU<br>ĐỨC</div>
-                    <div>
-                        <h1 id="pageTitle">kiều đức</h1>
+                    <div id="brandText" class="logo"><i data-lucide="map-pin" style="color: white; width: 24px; height: 24px;"></i></div>
+                    <div class="brand-text-container">
+                        <h1 id="pageTitle">Vị trí</h1>
                         <p id="sheetName" class="sheet-name">DASHBOARD</p>
                     </div>
                 </div>
+                <button type="button" class="icon-btn" id="toggleSidebarBtn" onclick="toggleSidebar()" style="background: transparent; border: none; padding: 4px; cursor: pointer; color: var(--muted);">
+                    <i data-lucide="panel-left-close" id="sidebarToggleIcon"></i>
+                </button>
             </div>
-            <div id="userPanel" class="user-panel"></div>
             <div id="tabs" class="tabs"></div>
+            <div id="userPanel" class="user-panel"></div>
         </aside>
 
         <main class="main-content">
@@ -93,15 +103,27 @@
             <div id="kanbanBoard" class="kanban-board"></div>
 
             <div id="mapContainer" style="display: none; height: calc(100vh - 150px); width: 100%; position: relative; margin-top: 10px;">
-                <div style="padding: 10px; display: flex; flex-wrap: wrap; gap: 10px; background: #fff; z-index: 1000; position: absolute; top: 10px; left: 60px; border-radius: 4px; box-shadow: 0 1px 5px rgba(0,0,0,0.2); max-width: calc(100% - 70px);">
-                    <button id="toggleTrackingBtn" type="button" class="primary-btn" onclick="toggleTracking()">Bắt đầu Định vị</button>
-                    <input type="date" id="historyDate" onchange="loadHistory()" style="padding: 5px; border-radius: 4px; border: 1px solid #ddd;">
-                    <button type="button" class="secondary-btn" onclick="loadHistory()">Xem lịch sử</button>
-                    <input type="text" id="searchAddress" placeholder="Nhập địa chỉ..." style="padding: 5px; border-radius: 4px; border: 1px solid #ddd; min-width: 200px;" onkeypress="if(event.key==='Enter') searchMapAddress()">
-                    <button type="button" class="secondary-btn" onclick="searchMapAddress()">Tìm</button>
-                    <button type="button" class="secondary-btn" onclick="loadOthersLocations()">Tải lại vị trí mọi người</button>
-                    <button type="button" class="primary-btn" onclick="triggerCamera()" style="background-color: #10b981;">📷 Chụp ảnh</button>
-                    <button type="button" class="secondary-btn" onclick="viewPhotos()">🖼️ Xem ảnh</button>
+                <div id="mapControlsPanel" class="map-controls-panel">
+                    <div class="map-control-group primary-group">
+                        <button id="toggleTrackingBtn" type="button" class="primary-btn tracking-btn" onclick="toggleTracking()"><i data-lucide="navigation"></i> Bắt đầu Định vị</button>
+                        <button type="button" class="primary-btn camera-btn" onclick="triggerCamera()"><i data-lucide="camera"></i> Chụp ảnh</button>
+                    </div>
+                    
+                    <div class="map-control-group">
+                        <input type="text" id="searchAddress" placeholder="Nhập địa chỉ..." onkeypress="if(event.key==='Enter') searchMapAddress()">
+                        <button type="button" class="secondary-btn" onclick="searchMapAddress()"><i data-lucide="search"></i></button>
+                    </div>
+
+                    <div class="map-control-group">
+                        <input type="date" id="historyDate" onchange="loadHistory()">
+                        <button type="button" class="secondary-btn" onclick="loadHistory()">Xem lịch sử</button>
+                    </div>
+
+                    <div class="map-control-group">
+                        <button type="button" class="secondary-btn" onclick="loadOthersLocations()"><i data-lucide="users"></i> Vị trí mọi người</button>
+                        <button type="button" class="secondary-btn" onclick="viewPhotos()"><i data-lucide="image"></i> Xem ảnh</button>
+                    </div>
+
                     <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;" onchange="handleCameraUpload(event)">
                 </div>
                 <div id="map" style="height: 100%; width: 100%; border-radius: 8px;"></div>
@@ -133,7 +155,7 @@
         </form>
     </div>
 
-    <script src="app.js?v=11"></script>
+    <script src="app.js?v=18"></script>
     <script>
         if ("serviceWorker" in navigator) {
             window.addEventListener("load", () => {

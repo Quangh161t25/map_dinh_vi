@@ -493,7 +493,7 @@ button {
 
 .kanban-cards {
     display: grid;
-    align-content: start;
+    
     gap: 10px;
     min-height: 0;
     overflow: auto;
@@ -1411,5 +1411,255 @@ td a {
 
     .order-items-table {
         min-width: 760px;
+    }
+}
+
+
+.app-shell {
+    transition: grid-template-columns 0.3s ease;
+}
+.app-shell.sidebar-collapsed {
+    grid-template-columns: 80px minmax(0, 1fr);
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    transition: padding 0.3s ease;
+}
+
+.tabs {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.user-panel {
+    margin-top: auto;
+    transition: all 0.3s ease;
+}
+
+.app-shell.sidebar-collapsed .brand-text-container {
+    display: none;
+}
+
+.app-shell.sidebar-collapsed .sidebar-header {
+    flex-direction: column;
+    gap: 10px;
+}
+
+.app-shell.sidebar-collapsed .tab span {
+    display: none;
+}
+
+.app-shell.sidebar-collapsed .tab {
+    justify-content: center;
+    padding: 10px;
+}
+
+.app-shell.sidebar-collapsed .user-panel {
+    grid-template-columns: 1fr;
+    justify-content: center;
+    padding: 8px 0;
+}
+
+.app-shell.sidebar-collapsed .user-info {
+    display: none;
+}
+
+.app-shell.sidebar-collapsed .user-panel button {
+    display: none;
+}
+
+.app-shell.sidebar-collapsed .user-avatar-fallback {
+    margin: 0 auto;
+}
+
+
+/* Fix huge tabs */
+.tabs {
+    align-content: start;
+}
+
+/* Fix mobile layout */
+@media (max-width: 900px) {
+    .app-shell.sidebar-collapsed {
+        grid-template-columns: 1fr;
+    }
+    .app-shell.sidebar-collapsed .sidebar-header {
+        flex-direction: row;
+    }
+    .app-shell.sidebar-collapsed .brand-text-container {
+        display: block;
+    }
+    .app-shell.sidebar-collapsed .tab span {
+        display: inline;
+    }
+    .app-shell.sidebar-collapsed .user-panel {
+        display: grid;
+        grid-template-columns: 32px minmax(0, 1fr) 34px;
+        padding: 8px;
+    }
+    .app-shell.sidebar-collapsed .user-info {
+        display: grid;
+    }
+    .app-shell.sidebar-collapsed .user-panel button {
+        display: block;
+    }
+    .app-shell.sidebar-collapsed .tab {
+        padding: 9px 11px;
+    }
+    #toggleSidebarBtn {
+        display: none !important;
+    }
+}
+
+
+/* Mobile Header & Overlay */
+.mobile-header {
+    display: none;
+}
+.sidebar-overlay {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    .app-shell {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    
+    .mobile-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: var(--primary);
+        color: white;
+        padding: 12px 16px;
+        position: sticky;
+        top: 0;
+        z-index: 900 !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .mobile-header h1 {
+        color: white;
+        font-size: 1.25rem;
+        margin: 0;
+        font-weight: 700;
+    }
+    
+    .sidebar {
+        position: fixed !important;
+        left: -280px;
+        top: 0;
+        bottom: 0;
+        width: 280px;
+        z-index: 9999 !important;
+        transition: left 0.3s ease;
+        border-right: 1px solid var(--border);
+        box-shadow: 4px 0 8px rgba(0,0,0,0.1);
+        height: 100vh;
+        overflow-y: auto;
+        background: #fff;
+    }
+    
+    .sidebar.mobile-open {
+        left: 0;
+    }
+    
+    .sidebar-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 9998 !important;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+    }
+    
+    .sidebar-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    
+    /* Restore vertical tabs on mobile instead of horizontal */
+    .tabs {
+        display: grid !important;
+        overflow-x: hidden !important;
+    }
+    
+    .user-panel {
+        margin-top: auto !important;
+        margin-bottom: 20px;
+    }
+}
+
+
+/* Map Controls Panel */
+.map-controls-panel {
+    position: absolute;
+    top: 10px;
+    left: 60px;
+    z-index: 1000;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-width: calc(100% - 70px);
+}
+
+.map-control-group {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    padding: 4px;
+    gap: 4px;
+}
+
+.map-control-group input {
+    border: none;
+    outline: none;
+    padding: 8px 10px;
+    background: transparent;
+    font-size: 0.9rem;
+    min-width: 140px;
+}
+
+.map-control-group input[type="date"] {
+    min-width: 120px;
+}
+
+.map-control-group button {
+    padding: 8px 12px;
+    white-space: nowrap;
+}
+
+.camera-btn {
+    background-color: #10b981 !important;
+}
+
+@media (max-width: 900px) {
+    .map-controls-panel {
+        top: auto;
+        bottom: 20px;
+        left: 10px;
+        right: 10px;
+        max-width: none;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 5px; /* for shadow */
+    }
+    
+    .map-controls-panel::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .map-control-group {
+        flex: 0 0 auto;
     }
 }
