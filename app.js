@@ -2344,7 +2344,18 @@ let historyPolyline = null;
 let trackingWatchId = null;
 let lastLocation = null;
 
+let autoStartedTracking = false;
+
 function renderMapModule() {
+    if (!autoStartedTracking) {
+        // Delay slightly to ensure map is fully rendered and UI is ready
+        setTimeout(() => {
+            if (!trackingWatchId) {
+                toggleTracking();
+            }
+        }, 1000);
+        autoStartedTracking = true;
+    }
     document.getElementById("tableWrapper").style.display = "none";
     document.getElementById("kanbanBoard").style.display = "none";
     document.getElementById("headerActions").style.display = "none";
