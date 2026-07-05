@@ -3043,3 +3043,22 @@ async function refreshOthersLocations() {
 
 // Run every 30 seconds
 setInterval(refreshOthersLocations, 30000);
+
+
+// Lắng nghe sự kiện mở app từ Widget
+if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
+    window.Capacitor.Plugins.App.addListener('appUrlOpen', data => {
+        if (data.url && data.url.includes('kieuducapp://camera')) {
+            console.log('App opened from widget! Launching camera...');
+            // Chờ UI load xong 1 chút rồi mở camera
+            setTimeout(() => {
+                if (typeof handleCameraUpload === 'function') {
+                    handleCameraUpload();
+                } else {
+                    const btn = document.getElementById('cameraBtn');
+                    if (btn) btn.click();
+                }
+            }, 500);
+        }
+    });
+}
