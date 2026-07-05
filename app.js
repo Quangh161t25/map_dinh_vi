@@ -2543,20 +2543,58 @@ async function loadHistory() {
 // --- TÍNH NĂNG CHỤP ẢNH ---
 let photoMarkers = [];
 
-function triggerCamera() {
+async function triggerCamera() {
     if (!lastLocation) {
         alert("Chưa có thông tin vị trí! Vui lòng 'Bắt đầu Định vị' và chờ lấy vị trí trước khi chụp ảnh.");
         return;
     }
-    document.getElementById('cameraInput').click();
+    
+    if (window.Capacitor && window.Capacitor.Plugins.Camera) {
+        try {
+            const { Camera, CameraResultType, CameraSource } = window.Capacitor.Plugins;
+            const image = await Camera.getPhoto({
+                quality: 80,
+                allowEditing: false,
+                resultType: CameraResultType.DataUrl,
+                source: CameraSource.Camera,
+                presentationStyle: 'fullscreen'
+            });
+            const file = dataURLtoFile(image.dataUrl, "photo.jpg");
+            await processCameraFile(file, false);
+        } catch (e) {
+            console.log("Hủy chụp ảnh", e);
+        }
+    } else {
+        document.getElementById('cameraInput').click();
+    }
 }
 
-async function handleCameraUpload(event) {
-    const file = event.target.files[0];
+
+function dataURLtoFile(dataurl, filename) {
+    var arr = dataurl.split(','),
+        mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[arr.length - 1]), 
+        n = bstr.length, 
+        u8arr = new Uint8Array(n);
+    while(n--){
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, {type:mime});
+}
+
+async function processCameraFile(file, isMarkerPhoto = false) {
     if (!file) return;
     
-    // Save current location right when photo is taken
-    const captureLocation = { ...lastLocation };
+    let captureLocation;
+    if (isMarkerPhoto) {
+        captureLocation = window.customMarkerLoc ? window.customMarkerLoc() : null;
+        if (!captureLocation) {
+            alert("Không tìm thấy vị trí đánh dấu!");
+            return;
+        }
+    } else {
+        captureLocation = { ...lastLocation };
+    }
     
     showLoading("Đang tải ảnh lên máy chủ...");
     try {
@@ -2575,37 +2613,54 @@ async function handleCameraUpload(event) {
         }
         
         const imageUrl = imgbbData.data.url;
-        
-        // Save to Google Sheets 'ANH_CHUP'
         showLoading("Đang lưu dữ liệu...");
+        
         const now = new Date();
         const id = 'IMG' + now.getTime();
         const id_nv = currentUser.id || currentUser.ho_ten || "Unknown";
-        const ngay = formatDateToDDMMYYYY(now);
-        const ngay_h = formatDateTimeToDDMMYYYYHHMMSS(now);
-        const mapStr = captureLocation.lat + "," + captureLocation.lng;
         
-        const row = [id, id_nv, ngay, ngay_h, mapStr, imageUrl];
-        const range = `${quoteSheetName("ANH_CHUP")}!A2`;
-        await sheetsFetch(`/values/${encodeURIComponent(range)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`, {
-            method: "POST",
-            body: JSON.stringify({ values: [row] })
-        });
-        
-        hideLoading();
-        
-        // Reload photos if they are currently visible
-        if (photoMarkers.length > 0) {
-            viewPhotos();
+        if (isMarkerPhoto) {
+            const row = {
+                "ID": id,
+                "Thời gian": now.toLocaleString("vi-VN"),
+                "Vị trí": captureLocation.lat + ", " + captureLocation.lng,
+                "Ảnh": imageUrl,
+                "Người gửi": id_nv,
+                "Ghi chú": "Ảnh đánh dấu thủ công"
+            };
+            await fetch(CONFIG.apiUrl, {
+                method: "POST",
+                body: JSON.stringify({ action: "append", sheetName: "ANH_CHUP", data: row })
+            });
+            hideLoading();
+            const m = window.customMarkerRef ? window.customMarkerRef() : null;
+            if (m) m.closePopup();
+        } else {
+            const ngay = formatDateToDDMMYYYY(now);
+            const ngay_h = formatDateTimeToDDMMYYYYHHMMSS(now);
+            const mapStr = captureLocation.lat + "," + captureLocation.lng;
+            
+            const row = [id, id_nv, ngay, ngay_h, mapStr, imageUrl];
+            const range = `${quoteSheetName("ANH_CHUP")}!A2`;
+            await sheetsFetch(`/values/${encodeURIComponent(range)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`, {
+                method: "POST",
+                body: JSON.stringify({ values: [row] })
+            });
+            hideLoading();
+            if (photoMarkers.length > 0) {
+                viewPhotos();
+            }
         }
-        
     } catch (err) {
         hideLoading();
         console.error("Lỗi tải ảnh:", err);
         alert("Không thể tải ảnh: " + err.message);
-    } finally {
-        event.target.value = ''; // Reset input
     }
+}
+
+async function handleCameraUpload(event) {
+    await processCameraFile(event.target.files[0], false);
+    event.target.value = '';
 }
 
 async function viewPhotos() {
@@ -2844,8 +2899,28 @@ function toggleMapSidebar() {
     sidebar.classList.toggle('collapsed');
 }
 
-function triggerMapMarkerPhotoUpload() {
-    document.getElementById('mapMarkerPhotoInput').click();
+async function triggerMapMarkerPhotoUpload() {
+    if (window.Capacitor && window.Capacitor.Plugins.Camera) {
+        try {
+            const { Camera, CameraResultType, CameraSource } = window.Capacitor.Plugins;
+            const image = await Camera.getPhoto({
+                quality: 80,
+                allowEditing: false,
+                resultType: CameraResultType.DataUrl,
+                source: CameraSource.Prompt,
+                presentationStyle: 'fullscreen',
+                promptLabelHeader: 'Tải / Chụp ảnh',
+                promptLabelPhoto: 'Chọn từ thư viện',
+                promptLabelPicture: 'Chụp ảnh mới'
+            });
+            const file = dataURLtoFile(image.dataUrl, "photo.jpg");
+            await processCameraFile(file, true);
+        } catch (e) {
+            console.log("Hủy chụp ảnh", e);
+        }
+    } else {
+        document.getElementById('mapMarkerPhotoInput').click();
+    }
 }
 
 async function handleMapMarkerPhotoUpload(event) {

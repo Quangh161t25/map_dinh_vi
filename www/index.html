@@ -18,6 +18,10 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script type="module">
+        import { defineCustomElements } from 'https://unpkg.com/@ionic/pwa-elements@latest/dist/esm/loader.js';
+        defineCustomElements(window);
+    </script>
 </head>
 
 <body>
@@ -118,9 +122,9 @@
                     <div class="map-sidebar-content" id="mapSidebarContent">
                         <button id="toggleTrackingBtn" type="button" class="map-icon-btn tracking-btn" onclick="toggleTracking()" title="Bắt đầu Định vị"><i data-lucide="navigation"></i></button>
                         <button type="button" class="map-icon-btn camera-btn" onclick="triggerCamera()" title="Chụp ảnh"><i data-lucide="camera"></i></button>
-                        <button type="button" class="map-icon-btn" onclick="loadHistory()" title="Xem lịch sử"><i data-lucide="clock"></i></button>
-                        <button type="button" class="map-icon-btn" onclick="loadOthersLocations()" title="Vị trí mọi người"><i data-lucide="users"></i></button>
-                        <button type="button" class="map-icon-btn" onclick="viewPhotos()" title="Xem ảnh"><i data-lucide="image"></i></button>
+                        <button id="btnLoadHistory" type="button" class="map-icon-btn" onclick="loadHistory()" title="Xem lịch sử"><i data-lucide="clock"></i></button>
+                        <button id="btnLoadOthers" type="button" class="map-icon-btn" onclick="loadOthersLocations()" title="Vị trí mọi người"><i data-lucide="users"></i></button>
+                        <button id="btnViewPhotos" type="button" class="map-icon-btn" onclick="viewPhotos()" title="Xem ảnh"><i data-lucide="image"></i></button>
                     </div>
                     <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;" onchange="handleCameraUpload(event)">
                     <input type="file" id="mapMarkerPhotoInput" accept="image/*" style="display: none;" onchange="handleMapMarkerPhotoUpload(event)">
