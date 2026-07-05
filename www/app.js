@@ -690,6 +690,14 @@ async function fetchData(seq = moduleLoadSeq) {
             normalized._sheetRow = index + 2;
             return normalized;
         });
+        
+        // Phân quyền: User chỉ xem được dữ liệu của mình trong bảng VI_TRI và ANH_CHUP
+        if (currentUser && currentUser.quyen !== 'admin' && (currentModule === 'VI_TRI' || currentModule === 'ANH_CHUP')) {
+            const idNvIdx = headers.indexOf('id_nv');
+            if (idNvIdx !== -1) {
+                allData = allData.filter(row => String(row[idNvIdx] || "").trim() === String(currentUser.id || "").trim());
+            }
+        }
         filteredData = [...allData];
         applyCurrentFilters();
         currentPage = 1;
@@ -2378,6 +2386,13 @@ async function searchMapAddress() {
 let otherUserMarkers = [];
 async function loadOthersLocations() {
     if (!mapInstance) return;
+    
+    // Phân quyền: Chỉ admin mới được xem vị trí mọi người
+    if (currentUser && currentUser.quyen !== 'admin') {
+        alert("Bạn chỉ có quyền xem vị trí của mình.");
+        return;
+    }
+    
     if (otherUserMarkers && otherUserMarkers.length > 0) {
         for (const marker of otherUserMarkers) {
             mapInstance.removeLayer(marker);
@@ -2610,6 +2625,13 @@ async function viewPhotos() {
             const imgUrl = r[5];
             
             if (coordsStr && imgUrl) {
+                // Phân quyền: User chỉ xem được ảnh của mình trên bản đồ
+                if (currentUser && currentUser.quyen !== 'admin') {
+                    if (String(id_nv).trim() !== String(currentUser.id || "").trim()) {
+                        continue;
+                    }
+                }
+                
                 const coords = coordsStr.split(',');
                 if (coords.length === 2) {
                     const lat = parseFloat(coords[0]);
