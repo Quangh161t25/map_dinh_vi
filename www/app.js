@@ -2045,6 +2045,30 @@ function showApp() {
     document.getElementById("authScreen").style.display = "none";
     document.querySelector(".app-shell").style.display = "";
     renderCurrentUser();
+    setupHistoryDropdown();
+}
+
+async function setupHistoryDropdown() {
+    const userSelect = document.getElementById("historyUserSelect");
+    if (!userSelect) return;
+    
+    if (currentUser?.quyen === "admin") {
+        userSelect.style.display = "inline-block";
+        try {
+            const users = await loadNhanVienRows();
+            let options = '<option value="">-- Lịch sử của tôi --</option>';
+            users.forEach(u => {
+                if (u.id !== currentUser.id) {
+                    options += `<option value="${u.id}">${u.ho_ten}</option>`;
+                }
+            });
+            userSelect.innerHTML = options;
+        } catch (e) {
+            console.error(e);
+        }
+    } else {
+        userSelect.style.display = "none";
+    }
 }
 
 function renderCurrentUser() {
@@ -2491,7 +2515,12 @@ async function loadHistory() {
         const rangeStr = `${quoteSheetName("VI_TRI")}!A2:E`;
         const data = await sheetsFetch(`/values/${encodeURIComponent(rangeStr)}`);
         const rows = data.values || [];
-        const myIdStr = String(currentUser?.id || currentUser?.ho_ten || "Unknown").trim();
+        
+        let targetId = String(currentUser?.id || currentUser?.ho_ten || "Unknown").trim();
+        if (currentUser?.quyen === "admin") {
+            const selectVal = document.getElementById("historyUserSelect")?.value;
+            if (selectVal) targetId = selectVal.trim();
+        }
         
         const historyPoints = [];
         for (const r of rows) {
@@ -2499,7 +2528,7 @@ async function loadHistory() {
             const rId = String(r[1] || "").trim();
             const rNgay = String(r[2] || "").trim();
             
-            if (rId === myIdStr && rNgay === formattedDate && r[4]) {
+            if (rId === targetId && rNgay === formattedDate && r[4]) {
                 const coords = r[4].split(',');
                 if (coords.length === 2) {
                     historyPoints.push([parseFloat(coords[0]), parseFloat(coords[1])]);

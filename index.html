@@ -113,6 +113,7 @@
                         <button type="button" class="icon-btn-small" onclick="searchMapAddress()"><i data-lucide="search"></i></button>
                     </div>
                     <div class="map-control-group">
+                        <select id="historyUserSelect" onchange="loadHistory()" style="display: none; padding: 6px; border-radius: 6px; border: 1px solid #ddd;"></select>
                         <input type="date" id="historyDate" onchange="loadHistory()">
                     </div>
                 </div>
