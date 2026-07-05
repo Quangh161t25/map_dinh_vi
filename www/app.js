@@ -2593,7 +2593,6 @@ async function handleCameraUpload(event) {
         });
         
         hideLoading();
-        alert("Lưu ảnh thành công tại vị trí hiện tại!");
         
         // Reload photos if they are currently visible
         if (photoMarkers.length > 0) {
@@ -2706,6 +2705,7 @@ async function viewPhotos() {
         } else {
             /* alert removed */
         }
+        if (btn) btn.classList.add('active-icon');
         
     } catch (err) {
         hideLoading();
