@@ -2176,6 +2176,16 @@ function renderMapModule() {
     
     document.getElementById("mapContainer").style.display = "block";
     
+    // Hide 'Vị trí mọi người' button if not admin
+    const btnOthers = document.getElementById('btnLoadOthers');
+    if (btnOthers) {
+        if (currentUser && currentUser.quyen !== 'admin') {
+            btnOthers.style.display = 'none';
+        } else {
+            btnOthers.style.display = 'flex';
+        }
+    }
+    
     if (!mapInstance) {
         mapInstance = L.map('map').setView([21.028511, 105.804817], 13);
         
@@ -2389,15 +2399,17 @@ async function loadOthersLocations() {
     
     // Phân quyền: Chỉ admin mới được xem vị trí mọi người
     if (currentUser && currentUser.quyen !== 'admin') {
-        alert("Bạn chỉ có quyền xem vị trí của mình.");
+        // Just return silently, the button is hidden anyway
         return;
     }
     
+    const btn = document.getElementById('btnLoadOthers');
     if (otherUserMarkers && otherUserMarkers.length > 0) {
         for (const marker of otherUserMarkers) {
             mapInstance.removeLayer(marker);
         }
         otherUserMarkers = [];
+        if (btn) btn.classList.remove('active-icon');
         return;
     }
     showLoading("Đang tải vị trí mọi người...");
@@ -2445,6 +2457,7 @@ async function loadOthersLocations() {
         }
         
         hideLoading();
+        if (btn) btn.classList.add('active-icon');
         /* alert removed */
         
     } catch (err) {
@@ -2495,11 +2508,13 @@ async function loadHistory() {
         }
         
         // Check if same date and history is already shown -> toggle off
+        const btn = document.getElementById('btnLoadHistory');
         if (historyPolyline && window._lastHistoryDate === formattedDate) {
             mapInstance.removeLayer(historyPolyline);
             historyPolyline = null;
             window._lastHistoryDate = null;
             hideLoading();
+            if (btn) btn.classList.remove('active-icon');
             return; // Đã xoá lịch sử (Toggle off)
         }
 
@@ -2512,6 +2527,7 @@ async function loadHistory() {
             historyPolyline = L.polyline(historyPoints, {color: 'red', weight: 4}).addTo(mapInstance);
             mapInstance.fitBounds(historyPolyline.getBounds());
             window._lastHistoryDate = formattedDate;
+            if (btn) btn.classList.add('active-icon');
             /* alert removed */
         } else {
             /* alert removed */
@@ -2595,11 +2611,13 @@ async function handleCameraUpload(event) {
 
 async function viewPhotos() {
     if (!mapInstance) return;
+    const btn = document.getElementById('btnViewPhotos');
     if (photoMarkers && photoMarkers.length > 0) {
         for (const marker of photoMarkers) {
             mapInstance.removeLayer(marker);
         }
         photoMarkers = [];
+        if (btn) btn.classList.remove('active-icon');
         return;
     }
     showLoading("Đang tải danh sách ảnh...");
