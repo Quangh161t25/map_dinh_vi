@@ -2779,7 +2779,7 @@ async function startCapacitorBackgroundTracking() {
         await BackgroundGeolocation.addWatcher(
             {
                 backgroundMessage: "Ứng dụng đang lấy vị trí ngầm.",
-                backgroundTitle: "Kiều Đức App",
+                backgroundTitle: "Vị trí App",
                 requestPermissions: true,
                 stale: false,
                 distanceFilter: 15
@@ -2831,7 +2831,7 @@ function renderTrangChuModule() {
     let html = `
     <div style="width: 100%; max-width: 1200px; margin: 0 auto; padding: 20px;">
         <div style="margin-bottom: 40px; text-align: center;">
-            <h2 style="font-size: 28px; color: var(--primary-color); margin-bottom: 10px;">Chào mừng đến với Kiều Đức App</h2>
+            <h2 style="font-size: 28px; color: var(--primary-color); margin-bottom: 10px;">Chào mừng đến với Vị trí App</h2>
             <p style="color: #6b7280; font-size: 16px;">Vui lòng chọn một chức năng bên dưới để bắt đầu</p>
         </div>
         <div style="display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; align-items: stretch;">`;

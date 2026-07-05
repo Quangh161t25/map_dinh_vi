@@ -1,7 +1,7 @@
 {
-    "name": "kiều đức",
-    "short_name": "kiều đức",
-    "description": "Ứng dụng quản lý kiều đức",
+    "name": "Vị trí",
+    "short_name": "Vị trí",
+    "description": "Ứng dụng quản lý Vị trí",
     "start_url": "./index.html",
     "scope": "./",
     "display": "standalone",
