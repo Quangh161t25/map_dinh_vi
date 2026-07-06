@@ -2541,6 +2541,10 @@ async function loadHistory() {
         if (historyPolyline && window._lastHistoryDate === formattedDate) {
             mapInstance.removeLayer(historyPolyline);
             historyPolyline = null;
+            if (window.historyMarkers) {
+                window.historyMarkers.forEach(m => mapInstance.removeLayer(m));
+                window.historyMarkers = [];
+            }
             window._lastHistoryDate = null;
             hideLoading();
             if (btn) btn.classList.remove('active-icon');
@@ -2550,10 +2554,28 @@ async function loadHistory() {
         if (historyPolyline) {
             mapInstance.removeLayer(historyPolyline);
         }
+        if (window.historyMarkers) {
+            window.historyMarkers.forEach(m => mapInstance.removeLayer(m));
+        }
+        window.historyMarkers = [];
         
         hideLoading();
         if (historyPoints.length > 0) {
             historyPolyline = L.polyline(historyPoints, {color: 'red', weight: 4}).addTo(mapInstance);
+            
+            historyPoints.forEach((pt, index) => {
+                const marker = L.circleMarker(pt, {
+                    radius: 6,
+                    fillColor: "#ff0000",
+                    color: "#ffffff",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 1
+                }).addTo(mapInstance);
+                marker.bindPopup(`Điểm ${index + 1}`);
+                window.historyMarkers.push(marker);
+            });
+            
             mapInstance.fitBounds(historyPolyline.getBounds());
             window._lastHistoryDate = formattedDate;
             if (btn) btn.classList.add('active-icon');
