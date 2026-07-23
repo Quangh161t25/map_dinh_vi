@@ -28,21 +28,30 @@
     <section id="authScreen" class="auth-screen">
         <form class="login-card" onsubmit="handleLogin(event)">
             <img src="icon.svg" alt="Logo" style="width: 72px; height: 72px; border-radius: 14px; object-fit: cover; margin-bottom: 8px;">
-            <h1>Đăng nhập</h1>
+            <h1 id="authTitle">Đăng nhập</h1>
+            
+            <label id="registerNameGroup" style="display: none;">
+                <span>Họ và tên</span>
+                <input id="registerName" type="text" autocomplete="name">
+            </label>
+
             <label>
-                <span>Tên đăng nhập</span>
+                <span id="authIdLabel">Tên đăng nhập / Email</span>
                 <input id="loginId" type="text" autocomplete="username" required>
             </label>
             <label>
                 <span>Mật khẩu</span>
                 <input id="loginPassword" type="password" autocomplete="current-password" required>
             </label>
-            <label class="remember-row">
+            <label class="remember-row" id="rememberRow">
                 <input id="rememberLogin" type="checkbox" checked>
                 <span>Lưu đăng nhập</span>
             </label>
             <p id="loginError" class="login-error"></p>
-            <button type="submit" class="primary-btn">Đăng nhập</button>
+            <button type="submit" id="authSubmitBtn" class="primary-btn">Đăng nhập</button>
+            <div style="margin-top: 15px; text-align: center; font-size: 14px;">
+                <a href="#" id="toggleAuthBtn" onclick="toggleAuthMode(event)" style="color: var(--primary); text-decoration: none; font-weight: 500;">Chưa có tài khoản? Đăng ký ngay</a>
+            </div>
         </form>
     </section>
 
