@@ -35,8 +35,18 @@
                 <input id="registerName" type="text" autocomplete="name">
             </label>
 
+            <label id="registerPhoneGroup" style="display: none;">
+                <span>Số điện thoại</span>
+                <input id="registerPhone" type="tel" autocomplete="tel">
+            </label>
+
+            <label id="registerEmailGroup" style="display: none;">
+                <span>Email</span>
+                <input id="registerEmail" type="email" autocomplete="email">
+            </label>
+
             <label>
-                <span id="authIdLabel">Tên đăng nhập / Email</span>
+                <span id="authIdLabel">Tên đăng nhập (ID)</span>
                 <input id="loginId" type="text" autocomplete="username" required>
             </label>
             <label>
@@ -106,6 +116,7 @@
             </div>
 
             <div id="homeContainer" class="home-container" style="display: none; padding: 20px;"></div>
+            <div id="danhBaContainer" class="danh-ba-container" style="display: none; padding: 20px;"></div>
 
             <div class="table-wrapper" id="tableWrapper">
                 <table id="dataTable">
